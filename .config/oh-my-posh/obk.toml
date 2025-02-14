@@ -1,0 +1,55 @@
+version = 3
+
+[[blocks]]
+type = "prompt"
+alignment = "left"
+
+[[blocks.segments]]
+template = "<#bd93f9>❯</><#50fa7b>❯</>"
+foreground = "#f8f8f2"
+type = "text"
+style = "plain"
+
+[[blocks.segments]]
+template = " {{ .Path }}"
+foreground = "#8be9fd"
+type = "path"
+style = "plain"
+
+[blocks.segments.properties]
+style = "folder"
+
+[[blocks.segments]]
+template = " \ue235 {{ if .Venv }}{{ .Venv }}{{ end }}"
+foreground = "#f8f8f2"
+type = "python"
+style = "plain"
+
+[blocks.segments.properties]
+fetch_virtual_env = true
+home_enabled = true
+
+[[blocks.segments]]
+template = " <#8be9fd>git:(</>{{ .HEAD }}<#8be9fd>)</>"
+foreground = "#ff5555"
+type = "git"
+style = "plain"
+
+[blocks.segments.properties]
+branch_icon = ""
+fetch_status = false
+
+[[blocks.segments]]
+template = " \uf119"
+foreground = "#ffb86c"
+type = "exit"
+style = "plain"
+
+[[blocks.segments]]
+template = " {{ .CurrentDate | date .Format }} "
+foreground = "#50fa7b"
+type = "time"
+style = "plain"
+
+[blocks.segments.properties]
+time_format = "15:04"
