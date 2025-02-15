@@ -1,10 +1,8 @@
 tap "homebrew/bundle"
 
 brew "btop"
-brew "stow"
 brew "nvtop"
 brew "git-lfs"
-brew "sniffnet"
 brew "fastfetch"
 brew "oh-my-posh"
 
@@ -12,7 +10,6 @@ brew "oh-my-posh"
 cask "vlc"
 cask "signal"
 cask "ghostty"
-cask "termius"
 cask "aldente"
 cask "spotify"
 cask "discord"
