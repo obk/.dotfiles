@@ -20,7 +20,7 @@ This repository contains my personal dotfiles and an installation script to quic
 
 1. **Clone the repository:** 
    ```bash
-   git clone https://git.sr.ht/~obk/.dotfiles
+   git clone https://github.com/obk/.dotfiles
    ```
 
 2. **Navigate to the directory:**
