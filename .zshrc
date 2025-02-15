@@ -15,6 +15,7 @@ alias gi='git init'
 alias gcl='git clone'
 alias gpa='git remote | xargs -L1 -I R git push R'
 alias cd..='cd ..'
+alias ou='ollama list | tail -n +2 | awk "{print \$1}" | xargs -I {} ollama pull {}'
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
