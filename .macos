@@ -1,0 +1,127 @@
+#!/usr/bin/env bash
+
+# Close System Preferences if it's open. This prevents conflicts
+# when modifying system settings.
+osascript -e 'tell application "System Preferences" to quit'
+
+# Keep sudo privileges alive.  The script uses `sudo` to modify
+# some system-wide defaults. This prevents repeated password prompts.
+# `sudo -v` validates the user's credentials (prompts for password if needed).
+sudo -v
+
+# Keep-alive: update existing `sudo` time stamp until `.macos` has finished.
+while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+
+# Expand save panels by default.
+defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
+defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode2 -bool true
+
+# Expand print panels by default.
+defaults write NSGlobalDomain PMPrintingExpandedStateForPrint -bool true
+defaults write NSGlobalDomain PMPrintingExpandedStateForPrint2 -bool true
+
+# Automatically quit the print center after printing.
+defaults write com.apple.print.PrintingPrefs "Quit When Finished" -bool true
+
+# Show control characters (like spaces, tabs, and newlines).
+defaults write NSGlobalDomain NSTextShowsControlCharacters -bool true
+
+# Disable automatic dash substitution (e.g., -- to em dash).
+defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
+
+# Disable automatic quote substitution (e.g., " to smart quotes).
+defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
+
+# Disable automatic spell correction.
+defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
+
+# Improve Bluetooth audio quality (higher minimum bitpool).  May reduce
+# stability on some devices.
+defaults write com.apple.BluetoothAudioAgent "Apple Bitpool Min (editable)" -int 40
+
+# Set screenshot save location to the Desktop.
+defaults write com.apple.screencapture location -string "${HOME}/Desktop"
+
+# Set screenshot file format to PNG.
+defaults write com.apple.screencapture type -string "png"
+
+# Enable font smoothing (anti-aliasing).  This generally improves
+# the appearance of text, especially on non-Retina displays.  The
+# `-g` is equivalent to `NSGlobalDomain`.
+defaults write -g CGFontRenderingFontSmoothingDisabled -bool FALSE
+
+# Require password after screensaver starts.
+defaults write com.apple.screensaver askForPassword -int 1
+
+# Set the delay before password is required after screensaver to 0 seconds (immediate).
+defaults write com.apple.screensaver askForPasswordDelay -int 0
+
+# Show all files in Finder, including hidden files (those starting with .).
+defaults write com.apple.finder AppleShowAllFiles -bool true
+
+# Always show file extensions in Finder.
+defaults write NSGlobalDomain AppleShowAllExtensions -bool true
+
+# Show the full path to the current folder in the Finder window's title bar.
+defaults write com.apple.finder ShowPathbar -bool true
+
+# Set Finder's default search scope to the current folder ("SCcf").
+# Other options include:
+# - SCev: Everything
+# - SCcf: Current Folder
+# - SCsp: Computer
+defaults write com.apple.finder FXDefaultSearchScope -string "SCcf"
+
+# Disable the warning when changing a file extension.
+defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
+
+# Prevent creation of .DS_Store files
+defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
+defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true
+
+# Set Finder's default view to list view ("Nlsv"). Other options:
+# - icnv: Icon view
+# - Nlsv: List view
+# - clmv: Column view
+# - Flwv: Cover Flow view (deprecated)
+# - glyv: Gallery view
+defaults write com.apple.finder FXPreferredViewStyle -string "Nlsv"
+
+# Don't show warning before emptying the Trash.
+defaults write com.apple.finder WarnOnEmptyTrash -bool false
+
+# Set which Info Panes are expanded in Finder Get Info window
+defaults write com.apple.finder FXInfoPanesExpanded -dict \
+    General -bool true \
+    OpenWith -bool true \
+    Privileges -bool true
+
+# Set the animation speed of hiding and showing the Dock to 0 (instant).
+defaults write com.apple.dock autohide-time-modifier -int 0
+
+# Clear the list of persistent apps in the Dock (removes all default icons).
+defaults write com.apple.dock persistent-apps -array
+
+# Don't show recent applications in the Dock.
+defaults write com.apple.dock show-recents -bool false
+
+# Set Dock icon size to 36 pixels.
+defaults write com.apple.dock tilesize -int 36
+
+# Automatically hide and show the Dock.
+defaults write com.apple.dock autohide -bool true
+
+# Set the delay before the Dock auto-hides to 0 seconds (immediate).
+defaults write com.apple.dock autohide-delay -float 0
+
+# Prevent Time Machine from prompting to use new disks for backups.
+defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true
+
+# Disable the "Are you sure you want to open this application?" dialog.
+defaults write com.apple.LaunchServices LSQuarantine -bool false
+
+
+killall Dock
+killall Finder
+killall SystemUIServer
+echo " Please logout or restart to take effect."
