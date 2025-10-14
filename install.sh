@@ -28,14 +28,6 @@ else
     print_msg "No .zshrc found in repository, skipping..."
 fi
 
-if [ -f "$REPO_DIR/.gitconfig" ]; then
-    print_msg "Updating .gitconfig..."
-    rm -f "$HOME/.gitconfig"
-    ln -sf "$REPO_DIR/.gitconfig" "$HOME/.gitconfig"
-else
-    print_msg "No .gitconfig found in repository, skipping..."
-fi
-
 # 2. Symlink contents of .config directory
 if [ -d "$REPO_DIR/.config" ]; then
     print_msg "Symlinking .config contents..."

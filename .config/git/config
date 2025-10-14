@@ -1,0 +1,11 @@
+[user]
+	name = obk
+	email = 68072031+obk@users.noreply.github.com
+[core]
+	compression = 9
+	whitespace = error
+	preloadindex = true
+[url "git@github.com:obk/"]
+	insteadOf = "obk:"
+[url "git@github.com:"]
+	insteadOf = "gh:"

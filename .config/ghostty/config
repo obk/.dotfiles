@@ -1,6 +1,5 @@
 font-family = FiraCodeNerdFont
-theme = tokyonight-storm
 background-opacity = 0.97
 window-height = 30
 window-width = 110
-font-size = 15
+font-size = 12
