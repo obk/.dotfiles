@@ -1,55 +1,88 @@
-# macOS Dotfiles
+# obk's dotfiles
 
-This repository contains my personal dotfiles and an installation script to quickly set up a macOS development environment.
+this repository contains my personal dotfiles and setup scripts for macos and linux environments.
 
-## Features
+## installation
 
-- **Zsh configuration:**  A customized `.zshrc` file for an enhanced shell experience.
-- **Configuration files:**  Includes various configuration files within the `.config` directory.
-- **Homebrew:** Leverages Homebrew for easy installation and management of packages.
-- **Brew Bundle:**  Uses Brew Bundle to manage and install packages from a `Brewfile`.
-- **System Preferences:**  Optionally configures macOS system preferences, such as Dock behavior and hidden file visibility.
+### macos
 
-## Prerequisites
+1.  clone the repository:
+    ```sh
+    git clone https://github.com/obk/.dotfiles.git
+    ```
+2.  navigate to the directory:
+    ```sh
+    cd .dotfiles
+    ```
+3.  run the installation script:
+    ```sh
+    ./install-mac.sh
+    ```
+the script will guide you through:
+* symlinking the `.zshrc` and `.config` directory.
+* installing homebrew (if not already present).
+* installing all applications and tools from the `brewfile` (with confirmation).
+* running the `.macos` script to set system defaults (with confirmation).
 
-- **Zsh:** This is the default shell in modern macOS versions.
-- **Xcode Command Line Tools:** Install these with `xcode-select --install`.
-- **Git:** Required for cloning the repository.
+### linux (debian/ubuntu)
 
-## Installation
+1.  clone the repository:
+    ```sh
+    git clone https://github.com/obk/.dotfiles.git
+    ```
+2.  navigate to the directory:
+    ```sh
+    cd .dotfiles
+    ```
+3.  run the installation script:
+    ```sh
+    ./install-linux.sh
+    ```
+the script will guide you through:
+* symlinking the `.bashrc` and `.config` directory.
+* installing a set of snap packages (with confirmation).
 
-1. **Clone the repository:** 
-   ```bash
-   git clone https://github.com/obk/.dotfiles
-   ```
+---
 
-2. **Navigate to the directory:**
-   ```bash
-   cd .dotfiles
-   ```
+## what's included?
 
-3. **Make the installation script executable:**
-   ```bash
-   chmod +x install.sh
-   ```
+### cross-platform
 
-4. **Run the installation script:**
-   ```bash
-    ./install.sh
-   ```
-   - The script will prompt you to confirm the installation of Brew packages from the `Brewfile`.
-   - The script will prompt you to confirm the change macOS system preferences during the installation process.
+* **prompt:** configuration for `oh-my-posh`.
+* **editor aliases:** `vi` is aliased to `nvim`, and `vim` is aliased to `vnim`.
+* **git aliases:**
+    * `gp`: `git push`
+    * `gl`: `git pull`
+    * `gcm`: `git commit -m`
+* **navigation & listing aliases:**
+    * `cd..`: `cd ..`
+    * `ll`: `ls -l --color=auto`
+    * `lal`: `ls -a -l --color=auto`
+* **ollama:** an alias `ou` to pull updates for all installed ollama models.
 
-**Note:** The installation script will overwrite existing `.zshrc` and `.config` files. Please back up any important files before running the script.
+### macos specific
 
-## Post-Installation
+* **shell:** configured for `zsh` (`.zshrc`).
+* **package management:** includes a `brewfile` that installs a curated list of cli tools, gui applications, and fonts.
+* **system defaults:** a comprehensive `.macos` script that:
+    * keeps `sudo` privileges alive during script execution.
+    * expands save and print panels by default.
+    * disables automatic dash and quote substitution.
+    * configures finder to show all files, file extensions, and the path bar.
+    * sets finder's default view to list view and search scope to the current folder.
+    * disables the ".ds_store" file creation on network and usb drives.
+    * disables the warning when changing file extensions or emptying the trash.
+    * disables the "are you sure you want to open this application?" dialog.
+    * configures the dock to autohide instantly, sets the icon size, and removes recent apps and default icons.
+    * requires a password immediately after the screensaver starts.
+    * prevents time machine from prompting for new backup disks.
+* **aliases:**
+    * `bf`: updates and cleans up all homebrew packages.
+    * `mu`: runs a system software update.
 
-- Restart your terminal or run `exec zsh` to load the new Zsh configuration.
+### linux specific
 
-## Customization
-
-Feel free to fork this repository and modify the dotfiles to suit your own preferences.
-
-## Disclaimer
-
-This repository is primarily for personal use. While you are welcome to use and adapt the dotfiles, I may not be able to provide extensive support or accept pull requests.
+* **shell:** configured for `bash` (`.bashrc`).
+* **package management:** the `install-linux.sh` script installs applications via `snap`.
+* **aliases:**
+    * `au`: updates, upgrades, and autoremoves `apt` packages.

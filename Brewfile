@@ -7,7 +7,7 @@ brew "speedtest-cli"
 
 cask "keka"
 cask "iina"
-cast "motrix"
+cask "motrix"
 cask "ghostty"
 cask "aldente"
 cask "spotify"
