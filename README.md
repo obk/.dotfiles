@@ -18,13 +18,8 @@ this repository contains my personal dotfiles and setup scripts for macos and li
     ```sh
     ./install-mac.sh
     ```
-the script will guide you through:
-* symlinking the `.zshrc` and `.config` directory.
-* installing homebrew (if not already present).
-* installing all applications and tools from the `brewfile` (with confirmation).
-* running the `.macos` script to set system defaults (with confirmation).
 
-### linux (debian/ubuntu)
+### linux (ubuntu)
 
 1.  clone the repository:
     ```sh
@@ -38,10 +33,6 @@ the script will guide you through:
     ```sh
     ./install-linux.sh
     ```
-the script will guide you through:
-* symlinking the `.bashrc` and `.config` directory.
-* installing a set of snap packages (with confirmation).
-
 ---
 
 ## what's included?
@@ -65,7 +56,6 @@ the script will guide you through:
 * **shell:** configured for `zsh` (`.zshrc`).
 * **package management:** includes a `brewfile` that installs a curated list of cli tools, gui applications, and fonts.
 * **system defaults:** a comprehensive `.macos` script that:
-    * keeps `sudo` privileges alive during script execution.
     * expands save and print panels by default.
     * disables automatic dash and quote substitution.
     * configures finder to show all files, file extensions, and the path bar.
@@ -84,5 +74,4 @@ the script will guide you through:
 
 * **shell:** configured for `bash` (`.bashrc`).
 * **package management:** the `install-linux.sh` script installs applications via `snap`.
-* **aliases:**
-    * `au`: updates, upgrades, and autoremoves `apt` packages.
+* **aliases:** `au`: updates, upgrades, and autoremoves `apt` packages.
