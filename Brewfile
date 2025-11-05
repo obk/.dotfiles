@@ -1,7 +1,9 @@
 tap "homebrew/bundle"
 
-brew "oh-my-posh"
 brew "go"
+brew "python3"
+brew "oh-my-posh"
+brew "speedtest-cli"
 
 cask "keka"
 cask "iina"
