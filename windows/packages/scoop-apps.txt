@@ -1,0 +1,14 @@
+gh
+go
+eza
+git
+vlc
+7zip
+dust
+rtss
+herdr
+hwmonitor
+oh-my-posh
+transmission
+speedtest-cli
+revouninstaller

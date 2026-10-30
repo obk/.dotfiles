@@ -1,0 +1,125 @@
+{
+    "$help": "https://aka.ms/terminal-documentation",
+    "$schema": "https://aka.ms/terminal-profiles-schema",
+    "actions": [],
+    "copyFormatting": "none",
+    "copyOnSelect": false,
+    "defaultProfile": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
+    "keybindings": 
+    [
+        {
+            "id": "Terminal.CopyToClipboard",
+            "keys": "ctrl+c"
+        },
+        {
+            "id": "Terminal.PasteFromClipboard",
+            "keys": "ctrl+v"
+        },
+        {
+            "id": "Terminal.FindText",
+            "keys": "ctrl+shift+f"
+        },
+        {
+            "id": "Terminal.DuplicatePaneAuto",
+            "keys": "alt+shift+d"
+        }
+    ],
+    "newTabMenu": 
+    [
+        {
+            "type": "remainingProfiles"
+        }
+    ],
+    "profiles": 
+    {
+        "defaults": 
+        {
+            "colorScheme": 
+            {
+                "dark": "Catppuccin Mocha",
+                "light": "Catppuccin Latte"
+            },
+            "font": 
+            {
+                "face": "Lilex Nerd Font Mono"
+            }
+        },
+        "list": 
+        [
+            {
+                "commandline": "\"C:\\Users\\obk\\AppData\\Local\\Microsoft\\WindowsApps\\Microsoft.PowerShell_8wekyb3d8bbwe\\pwsh.exe\" -NoLogo",
+                "guid": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
+                "hidden": false,
+                "name": "PowerShell",
+                "source": "Windows.Terminal.PowershellCore"
+            },
+            {
+                "guid": "{41ed1f78-733e-5f07-b5d7-02beec70c5f5}",
+                "hidden": false,
+                "name": "Ubuntu-26.04",
+                "source": "Microsoft.WSL"
+            },
+            {
+                "guid": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
+                "hidden": true,
+                "name": "Windows PowerShell"
+            },
+            {
+                "guid": "{0caa0dad-35be-5f56-a8ff-afceeeaa6101}",
+                "hidden": true,
+                "name": "Command Prompt"
+            }
+        ]
+    },
+    "schemes": 
+    [
+        {
+            "background": "#eff1f5",
+            "black": "#5c5f77",
+            "blue": "#1e66f5",
+            "brightBlack": "#6c6f85",
+            "brightBlue": "#456eff",
+            "brightCyan": "#2d9fa8",
+            "brightGreen": "#49af3d",
+            "brightPurple": "#fe85d8",
+            "brightRed": "#de293e",
+            "brightWhite": "#bcc0cc",
+            "brightYellow": "#eea02d",
+            "cursorColor": "#dc8a78",
+            "cyan": "#179299",
+            "foreground": "#4c4f69",
+            "green": "#40a02b",
+            "name": "Catppuccin Latte",
+            "purple": "#ea76cb",
+            "red": "#d20f39",
+            "selectionBackground": "#acb0be",
+            "white": "#acb0be",
+            "yellow": "#df8e1d"
+        },
+        {
+            "background": "#1e1e2e",
+            "black": "#45475a",
+            "blue": "#89b4fa",
+            "brightBlack": "#585b70",
+            "brightBlue": "#74a8fc",
+            "brightCyan": "#6bd7ca",
+            "brightGreen": "#89d88b",
+            "brightPurple": "#f2aede",
+            "brightRed": "#f37799",
+            "brightWhite": "#bac2de",
+            "brightYellow": "#ebd391",
+            "cursorColor": "#f5e0dc",
+            "cyan": "#94e2d5",
+            "foreground": "#cdd6f4",
+            "green": "#a6e3a1",
+            "name": "Catppuccin Mocha",
+            "purple": "#f5c2e7",
+            "red": "#f38ba8",
+            "selectionBackground": "#585b70",
+            "white": "#a6adc8",
+            "yellow": "#f9e2af"
+        }
+    ],
+    "theme": "system",
+    "themes": []
+}

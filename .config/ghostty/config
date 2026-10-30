@@ -1,0 +1,27 @@
+font-family = Lilex Nerd Font
+background-opacity = 0.97
+window-height = 30
+window-width = 110
+font-size = 13
+# Catppuccin Mocha / Latte (built in), follows the system light/dark mode
+theme = dark:Catppuccin Mocha,light:Catppuccin Latte
+# safety net: text nearly the same color as its background turns black/white
+minimum-contrast = 1.5
+
+
+
+# ── Tabs ────────────────────────────────────────────────────
+# Tabs live in the title bar (no separate tab row), colored like the terminal
+gtk-titlebar-style = tabs
+window-theme       = ghostty
+gtk-toolbar-style  = flat
+# Rounded "pill" tabs, styled in tabs.css next to this file
+gtk-custom-css     = tabs.css
+# macOS equivalent (Linux ignores it): tabs in the title bar, colored like the terminal
+macos-titlebar-style = tabs
+
+# alt+1…8 jump to a tab, alt+9 last tab, ctrl+tab / ctrl+shift+tab cycle (built in)
+keybind = alt+shift+arrow_left=move_tab:-1
+keybind = alt+shift+arrow_right=move_tab:1
+keybind = ctrl+shift+r=prompt_tab_title
+keybind = ctrl+shift+space=toggle_tab_overview

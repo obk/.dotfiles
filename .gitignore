@@ -1,0 +1,5 @@
+# The global gitignore (.config/git/ignore) hides .claude/ in every project.
+# This repo keeps shared Claude Code settings there on purpose.
+!/.claude/
+# gh's login token lives here; only config.yml is shared
+/.config/gh/hosts.yml

@@ -1,0 +1,11 @@
+onboarding = false
+
+[ui.toast]
+delivery = "system"
+
+[ui]
+status_indicators = "symbols"
+
+[theme]
+name = "terminal"
+auto_switch = false

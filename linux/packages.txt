@@ -1,0 +1,53 @@
+# dnf packages for fedora, installed by linux.sh. one per line, # for comments.
+# the repos they come from (rpm fusion, terra, helium copr, tailscale) are
+# added by linux.sh before this list is installed. drivers and codecs are
+# handled by linux/fedora-setup.sh, not here. oh-my-posh has no fedora package;
+# linux.sh downloads it to ~/.local/bin.
+
+# cli
+gh
+eza                   # ls with icons and git status (ll, lal)
+btop
+fish
+htop
+unrar                 # rpm fusion nonfree
+unzip
+golang
+du-dust               # dust: disk usage tree
+fastfetch
+speedtest-cli
+
+# dev
+gcc
+make
+nodejs
+podman
+distrobox
+python3-pip
+podman-compose
+
+# filesystems (windows drives)
+ntfs-3g
+exfatprogs
+
+# apps
+vlc
+zed                   # terra
+7zip
+discord               # terra
+ghostty               # terra
+tailscale             # tailscale repo
+helium-bin            # copr imput/helium
+dconf-editor
+gnome-tweaks
+signal-desktop        # terra
+spotify-launcher      # terra
+transmission-gtk
+gnome-extensions-app
+
+# gaming
+steam                 # rpm fusion nonfree
+gamemode
+mangohud
+gamescope
+heroic-games-launcher # terra

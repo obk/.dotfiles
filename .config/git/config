@@ -1,0 +1,39 @@
+[user]
+    name = obk
+    email = 68072031+obk@users.noreply.github.com
+    signingKey = ~/.ssh/obk.pub
+
+[core]
+    compression = 9
+    whitespace = error
+    preloadindex = true
+
+[init]
+    defaultBranch = main
+
+[url "git@github.com:"]
+    insteadOf = "gh:"
+
+[url "git@github.com:obk/"]
+    insteadOf = "obk:"
+
+[safe]
+    # Standard cross-platform path
+    directory = ~/dev/git.obk.dev
+    # Retained WSL-specific path if you access Windows drives from a Linux shell
+    directory = /mnt/c/Users/obk/dev/git.obk.dev
+
+[gpg]
+    format = ssh
+
+[commit]
+    gpgSign = true
+
+[tag]
+    gpgSign = true
+
+[gpg "ssh"]
+    allowedSignersFile = ~/.ssh/allowed_signers
+
+[includeIf "gitdir/i:~/dev/spinney/"]
+    path = ~/dev/spinney/.gitconfig

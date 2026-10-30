@@ -1,0 +1,39 @@
+export PATH="$HOME/.bin:$HOME/.local/bin:$PATH"
+if [ -x /opt/homebrew/bin/brew ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [ -x /usr/local/bin/brew ]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+fi
+eval "$(oh-my-posh init zsh --config ~/.config/oh-my-posh/obk.toml)"
+
+export EDITOR='zed --wait'
+export VISUAL="$EDITOR"
+
+alias cd..='cd ..'
+alias gp='git push'
+alias gl='git pull'
+alias gcm='git commit -m'
+
+# common typos
+alias sl='ls'
+alias gti='git'
+alias exti='exit'
+alias grpe='grep'
+alias celar='clear'
+alias claer='clear'
+alias clera='clear'
+
+alias ll='ls -lG'
+alias lal='ls -alG'
+
+# eza: ls with icons and git status, when installed
+if command -v eza >/dev/null; then
+    alias ll='eza -l --icons --git'
+    alias lal='eza -la --icons --git'
+fi
+# dust: du as a readable tree, when installed (`command du` still runs the real one)
+if command -v dust >/dev/null; then
+    alias du='dust'
+fi
+alias mu='sudo softwareupdate -i -a'
+alias bf='brew update && brew upgrade && brew autoremove && brew cleanup --prune=all && brew doctor'

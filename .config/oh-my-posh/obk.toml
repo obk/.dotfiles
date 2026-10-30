@@ -1,0 +1,56 @@
+version = 3
+
+[[blocks]]
+type = "prompt"
+alignment = "left"
+
+[[blocks.segments]]
+template = "<red>❯</><blue>❯</>"
+foreground = "default"
+type = "text"
+style = "plain"
+
+[[blocks.segments]]
+template = " {{ .Path }}"
+foreground = "blue"
+type = "path"
+style = "plain"
+
+[blocks.segments.properties]
+style = "folder"
+
+[[blocks.segments]]
+template = " \ue235 {{ if .Venv }}{{ .Venv }}{{ end }}"
+foreground = "default"
+type = "python"
+style = "plain"
+
+[blocks.segments.properties]
+fetch_virtual_env = true
+home_enabled = true
+
+[[blocks.segments]]
+# branch, then * unstaged and + staged changes (?new ~modified -deleted), ⇡ ahead / ⇣ behind
+template = " git:(<red>{{ .HEAD }}</>{{ if .Working.Changed }} <blue>*{{ .Working.String }}</>{{ end }}{{ if .Staging.Changed }} +{{ .Staging.String }}{{ end }}{{ if gt .Ahead 0 }} ⇡{{ .Ahead }}{{ end }}{{ if gt .Behind 0 }} ⇣{{ .Behind }}{{ end }})"
+foreground = "default"
+type = "git"
+style = "plain"
+
+[blocks.segments.properties]
+branch_icon = ""
+fetch_status = true
+
+[[blocks.segments]]
+template = " \uf119"
+foreground = "red"
+type = "exit"
+style = "plain"
+
+[[blocks.segments]]
+template = " {{ .CurrentDate | date .Format }} "
+foreground = "default"
+type = "time"
+style = "plain"
+
+[blocks.segments.properties]
+time_format = "15:04"

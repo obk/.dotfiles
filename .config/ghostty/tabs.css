@@ -1,0 +1,50 @@
+/* Ghostty tabs: rounded "pill" style (loaded via gtk-custom-css) */
+
+/* pill-shaped tabs, including the keyboard-focus ring */
+tabbar tab,
+dnd tab {
+  border-radius: 99px;
+  padding: 3px 6px;
+}
+tabbar tabbox > tabboxchild { border-radius: 99px; }
+
+/* no divider lines between tabs (their spacing is kept) */
+tabbar tabbox > separator { opacity: 0; }
+
+/* soft filled pills instead of a hairline outline */
+tabbar tab:hover,
+tabbar tab:active,
+tabbar tab:selected { box-shadow: none; }
+tabbar tab:hover          { background-color: color-mix(in srgb, currentColor 8%, transparent); }
+tabbar tab:selected       { background-color: color-mix(in srgb, currentColor 16%, transparent); }
+tabbar tab:selected:hover { background-color: color-mix(in srgb, currentColor 20%, transparent); }
+
+/* make the active tab's title stand out */
+tabbar tab:selected label { font-weight: 600; }
+
+/* hide the "new tab" and "tab overview" buttons (ctrl+shift+t and
+ * ctrl+shift+space still work); GTK CSS has no display:none, so they
+ * are collapsed to zero size instead */
+tabbar .start-action > box > splitbutton,
+tabbar .start-action > box > splitbutton *,
+tabbar .end-action > box > button.toggle,
+tabbar .end-action > box > button.toggle * {
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  opacity: 0;
+  -gtk-icon-size: 1px;
+}
+
+/* compact tab bar (~34px instead of 46px, like Helium's tab strip) */
+tabbar tabbox { padding-top: 3px; padding-bottom: 3px; min-height: 0; }
+tabbar tab { min-height: 20px; padding: 2px 6px; }
+tabbar tab button.image-button { min-width: 20px; min-height: 20px; }
+tabbar .start-action,
+tabbar .end-action { padding-top: 3px; padding-bottom: 3px; }
+tabbar .end-action menubutton > button { min-height: 22px; min-width: 22px; padding: 2px 4px; }
+tabbar windowcontrols > button { min-height: 22px; min-width: 22px; padding: 2px; }
+tabbar windowcontrols > button > image { padding: 3px; }

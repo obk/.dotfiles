@@ -1,0 +1,14 @@
+{
+  "env": {
+    "CLAUDE_CODE_SUBAGENT_MODEL": "haiku"
+  },
+  "theme": "auto",
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "xhigh"
+    }
+  },
+  "preferredNotifChannel": "auto",
+  "inputNeededNotifEnabled": false,
+  "agentPushNotifEnabled": true
+}
