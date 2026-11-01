@@ -56,7 +56,8 @@ BACKUP_DIR="$HOME/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)"
 # Print "repo path<TAB>target path" for every config file this repo manages.
 config_pairs() {
     printf '%s\t%s\n' "macos/zshrc" "$HOME/.zshrc"
-    (cd "$REPO_DIR" && find .config .ssh -type f ! -name .DS_Store | sort) |
+    # .config/claude/settings.json is merged, not copied (merge_claude_settings)
+    (cd "$REPO_DIR" && find .config .ssh -type f ! -name .DS_Store ! -path .config/claude/settings.json | sort) |
         while IFS= read -r rel; do
             printf '%s\t%s\n' "$rel" "$HOME/$rel"
         done
@@ -107,13 +108,36 @@ export_file() {
     print_info "updated $1"
 }
 
-# Claude Code keeps one ~/.claude/settings.json that mixes shared preferences
-# with machine-only keys (hooks, auto mode). Merge the repo's keys into it
+# Claude Code lives in ~/.config/claude instead of ~/.claude: fish and zsh set
+# CLAUDE_CONFIG_DIR to it once it exists. Move an existing ~/.claude and
+# ~/.claude.json there once, so the login, history and plugins come along.
+# Returns 1 when the move had to wait (Claude Code running), so the settings
+# merge doesn't create an empty ~/.config/claude that the shells would switch to.
+CLAUDE_DIR="$HOME/.config/claude"
+
+migrate_claude_dir() {
+    [ -d "$HOME/.claude" ] || [ -f "$HOME/.claude.json" ] || return 0
+    if [ -e "$CLAUDE_DIR" ]; then
+        print_info "skip    ~/.claude and ~/.claude.json ($CLAUDE_DIR already exists; merge or delete them by hand)"
+        return 0
+    fi
+    if pgrep -x claude > /dev/null; then
+        print_info "wait    ~/.claude (Claude Code is running; quit it and re-run)"
+        return 1
+    fi
+    mkdir -p "$HOME/.config"
+    if [ -d "$HOME/.claude" ]; then mv "$HOME/.claude" "$CLAUDE_DIR"; else mkdir "$CLAUDE_DIR"; fi
+    if [ -f "$HOME/.claude.json" ]; then mv "$HOME/.claude.json" "$CLAUDE_DIR/.claude.json"; fi
+    print_info "move    ~/.claude, ~/.claude.json -> $CLAUDE_DIR"
+}
+
+# Claude Code keeps one settings.json that mixes shared preferences with
+# machine-only keys (hooks, auto mode). Merge the repo's keys into it
 # instead of replacing the file, so this machine's own keys are kept.
-CLAUDE_SETTINGS="$HOME/.claude/settings.json"
+CLAUDE_SETTINGS="$CLAUDE_DIR/settings.json"
 
 merge_claude_settings() {
-    local repo="$REPO_DIR/.claude/settings.json" merged backup status=0
+    local repo="$REPO_DIR/.config/claude/settings.json" merged backup status=0
     if ! command -v python3 &> /dev/null; then
         print_info "skip    $CLAUDE_SETTINGS (needs python3)"
         return
@@ -141,14 +165,14 @@ EOF
         *) print_info "skip    $CLAUDE_SETTINGS (couldn't read it as JSON)"; return ;;
     esac
     if [ -f "$CLAUDE_SETTINGS" ]; then
-        backup="$BACKUP_DIR/.claude/settings.json"
+        backup="$BACKUP_DIR/.config/claude/settings.json"
         mkdir -p "$(dirname "$backup")"
         cp "$CLAUDE_SETTINGS" "$backup"
         print_info "backup  $CLAUDE_SETTINGS -> $backup"
     fi
     mkdir -p "$(dirname "$CLAUDE_SETTINGS")"
     printf '%s\n' "$merged" > "$CLAUDE_SETTINGS"
-    print_info "merge   .claude/settings.json -> $CLAUDE_SETTINGS"
+    print_info "merge   .config/claude/settings.json -> $CLAUDE_SETTINGS"
 }
 
 # Fonts ship with the repo (fonts/), so every machine gets the same versions.
@@ -194,8 +218,8 @@ export_claude_settings() {
         print_info "missing $CLAUDE_SETTINGS"
         return
     fi
-    command -v python3 &> /dev/null || { print_info "skip    .claude/settings.json (needs python3)"; return; }
-    python3 - "$REPO_DIR/.claude/settings.json" "$CLAUDE_SETTINGS" <<'EOF'
+    command -v python3 &> /dev/null || { print_info "skip    .config/claude/settings.json (needs python3)"; return; }
+    python3 - "$REPO_DIR/.config/claude/settings.json" "$CLAUDE_SETTINGS" <<'EOF'
 import json, sys
 repo, live = sys.argv[1], sys.argv[2]
 shared, cur = json.load(open(repo)), json.load(open(live))
@@ -204,7 +228,7 @@ if new != shared:
     with open(repo, "w") as f:
         json.dump(new, f, indent=2, ensure_ascii=False)
         f.write("\n")
-    print("    updated .claude/settings.json")
+    print("    updated .config/claude/settings.json")
 EOF
 }
 
@@ -229,7 +253,7 @@ print_msg "Copying configs..."
 [ -d "$HOME/.ssh" ] || mkdir -m 700 "$HOME/.ssh"  # ssh refuses a ~/.ssh others can write to
 remove_old_links
 config_pairs | while IFS=$'\t' read -r rel dest; do install_file "$rel" "$dest"; done
-merge_claude_settings
+if migrate_claude_dir; then merge_claude_settings; fi
 install_fonts
 add_allowed_signer
 [ -d "$BACKUP_DIR" ] && print_info "replaced files were backed up to $BACKUP_DIR"

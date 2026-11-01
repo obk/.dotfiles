@@ -36,6 +36,7 @@ configs are **copied**, not symlinked, so the repo can be moved or deleted witho
 ├── windows.ps1           # windows installer (scoop)
 ├── .config/              # mirrors ~/.config
 │   ├── btop/             # btop.conf, TTY theme: uses the terminal's colors
+│   ├── claude/           # settings.json: shared claude code preferences, merged (not copied)
 │   ├── fish/
 │   ├── fontconfig/       # lilex nerd font mono as the default monospace (linux)
 │   ├── gh/               # config.yml only (ssh); hosts.yml holds the login token and is git-ignored
@@ -46,8 +47,6 @@ configs are **copied**, not symlinked, so the repo can be moved or deleted witho
 │   └── zed/              # shared by all three (windows: %APPDATA%\Zed)
 ├── .ssh/
 │   └── config            # ssh host aliases (home server on the lan); no keys
-├── .claude/
-│   └── settings.json     # shared claude code preferences, merged into ~/.claude/settings.json
 ├── macos/
 │   ├── Brewfile
 │   ├── defaults.sh       # system preferences
@@ -82,12 +81,18 @@ commits and tags are signed with an ssh key, `~/.ssh/obk.pub` (`user.signingKey`
 
 git checks signatures (`git log --show-signature`) against `~/.ssh/allowed_signers`. every installer adds `<email> <key>` for the signing key to that file, keeping any other entries; if the key isn't there yet the step is skipped, so re-run the installer once it is.
 
-### claude code (`.claude/settings.json`)
+### claude code (`.config/claude/settings.json`)
 
-claude code keeps everything in one `~/.claude/settings.json`, mixing preferences with keys that only make sense on one machine. so this file is **merged**, not copied: install writes the repo's keys into the live file and keeps every other key (a changed file is backed up first, like the rest). export copies the current values of those same keys back, so a setting changed on one machine (say, the model) ends up in the repo.
+claude code lives in **`~/.config/claude`** instead of `~/.claude`, through [`CLAUDE_CONFIG_DIR`](https://code.claude.com/docs/en/env-vars). that one folder then holds everything claude code would put in `~/.claude` and `~/.claude.json`: settings, login, history, sessions, plugins, skills, agents and the user `CLAUDE.md`. project `.claude/` folders in repos are unaffected.
+
+- **where the variable comes from:** fish and zsh set it, but only once `~/.config/claude` exists, so a machine that hasn't been migrated keeps working from `~/.claude`. on windows the installer sets it as a user environment variable, so it applies however claude code is started. it can't go in `settings.json`, since that file lives inside the folder it picks.
+- **moving an existing install:** every installer moves `~/.claude` to `~/.config/claude` and `~/.claude.json` to `~/.config/claude/.claude.json` once, so the login and history come along. it waits (and skips the settings merge) while claude code is running: quit it and re-run. if both folders already exist it leaves them alone for you to merge or delete.
+- **macos login:** the keychain entry is tied to the config folder, so after the move claude code asks you to log in once. on linux and windows the login is a file (`.credentials.json`) that moves with the folder.
+
+claude code keeps its settings in one `settings.json`, mixing preferences with keys that only make sense on one machine. so the repo's file is **merged**, not copied: install writes the repo's keys into the live file and keeps every other key (a changed file is backed up first, like the rest). export copies the current values of those same keys back, so a setting changed on one machine ends up in the repo.
 
 - **shared:** `env` (subagent model), `theme` (`auto`: follows the terminal's light/dark background), `modelSettings` and the notification settings.
-- **not shared:** plugins (`enabledPlugins`, `extraKnownMarketplaces`, `pluginConfigs`), `hooks` (local script paths), `autoMode` and ui state, plus everything else in `~/.claude` (login, history, sessions, caches, installed plugin files). to share another key, add it to `.claude/settings.json` once; export keeps it up to date from then on.
+- **not shared:** plugins (`enabledPlugins`, `extraKnownMarketplaces`, `pluginConfigs`), `hooks` (local script paths), `autoMode`, `model` and ui state, plus everything else in the folder (login, history, sessions, caches, installed plugin files). to share another key, add it to `.config/claude/settings.json` once; export keeps it up to date from then on.
 - needs `python3` on macos and linux (macos gets it with the xcode command line tools); without it the step is skipped.
 
 ## installation (macos)
@@ -121,7 +126,7 @@ the script can be run from any directory and is safe to re-run.
 
 ### what the installer does
 
-  * **copy configs:** `macos/zshrc` → `~/.zshrc` and every file in `.config` → `~/.config`; `.claude/settings.json` is merged into `~/.claude/settings.json`.
+  * **copy configs:** `macos/zshrc` → `~/.zshrc` and every file in `.config` → `~/.config`, except `.config/claude/settings.json`, which is merged into `~/.config/claude/settings.json` after `~/.claude` is moved there (see [claude code](#claude-code-configclaudesettingsjson)).
   * **backups:** anything different that already exists is moved to `~/.dotfiles-backup/<timestamp>/` first. symlinks left by older versions of this repo are replaced with real files.
   * **commit signing:** adds the signing key to `~/.ssh/allowed_signers` (see [commit signing](#commit-signing-configgitconfig)).
   * **install homebrew:** installs it if missing (supporting both arm and intel macs).
@@ -145,7 +150,7 @@ same flags as `mac.sh` (`-y`, `-e`, `-h`).
 
 ### what the installer does
 
-  * **copy configs:** every file in `.config` → `~/.config`; `.claude/settings.json` is merged into `~/.claude/settings.json`. no zshrc; bash stays as the fallback shell.
+  * **copy configs:** every file in `.config` → `~/.config`, except `.config/claude/settings.json`, which is merged as on macos. no zshrc; bash stays as the fallback shell.
   * **backups:** same as macos, to `~/.dotfiles-backup/<timestamp>/`.
   * **commit signing:** same as macos, adds the signing key to `~/.ssh/allowed_signers`.
   * **system setup:** prompts to run `linux/fedora-setup.sh` (see below).
@@ -183,7 +188,8 @@ cd $HOME\.dotfiles
 | `.config/gh/config.yml` | `%APPDATA%\GitHub CLI\` |
 | `.config/herdr/config.toml`, `config-gpui.local.toml` | `~\.config\herdr\` |
 | `.ssh/config` | `~\.ssh\` |
-| `.claude/settings.json` | merged into `~\.claude\settings.json` |
+| `~\.claude`, `~\.claude.json` | moved into `~\.config\claude\` once; `CLAUDE_CONFIG_DIR` user variable set to it |
+| `.config/claude/settings.json` | merged into `~\.config\claude\settings.json` |
 | signing key from `.config/git/config` | added to `~\.ssh\allowed_signers` |
 | `windows/powershell/…profile.ps1` | `$PROFILE` |
 | `windows/windows-terminal/settings.json` | `%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_…\LocalState\` |

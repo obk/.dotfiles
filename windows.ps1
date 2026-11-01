@@ -9,8 +9,9 @@
 
     Shared configs (git, oh-my-posh, zed) live in .config\ and are used by
     macOS too; Windows-only configs and package lists live in windows\.
-    Shared Claude Code settings in .claude\settings.json are merged into
-    ~\.claude\settings.json, keeping keys only this machine has.
+    Claude Code is moved to ~\.config\claude (CLAUDE_CONFIG_DIR), and the
+    shared settings in .config\claude\settings.json are merged into its
+    settings.json, keeping keys only this machine has.
 
     When started from Windows PowerShell 5.1 it installs scoop and
     PowerShell 7 if missing and re-runs itself with pwsh.
@@ -124,17 +125,61 @@ function Read-List($path) {
     Get-Content $path | ForEach-Object Trim | Where-Object { $_ -and -not $_.StartsWith('#') }
 }
 
-# Claude Code keeps one ~/.claude/settings.json that mixes shared preferences
-# with machine-only keys (hooks, auto mode). The repo's keys are merged into it
+# Claude Code lives in ~\.config\claude instead of ~\.claude, through the
+# CLAUDE_CONFIG_DIR user environment variable. An existing ~\.claude and
+# ~\.claude.json are moved there once, so the login, history and plugins come
+# along. Returns $false when the move had to wait (Claude Code running), so the
+# settings merge doesn't create an empty ~\.config\claude to switch to.
+$ClaudeDir = "$HOME\.config\claude"
+
+function Move-ClaudeDir {
+    $oldDir = "$HOME\.claude"
+    $oldJson = "$HOME\.claude.json"
+    if (-not (Test-Path -LiteralPath $oldDir) -and -not (Test-Path -LiteralPath $oldJson)) { return $true }
+    if (Test-Path -LiteralPath $ClaudeDir) {
+        Write-Warn "skip    ~\.claude and ~\.claude.json ($ClaudeDir already exists; merge or delete them by hand)"
+        return $true
+    }
+    if (Get-Process claude -ErrorAction SilentlyContinue) {
+        Write-Warn 'wait    ~\.claude (Claude Code is running; quit it and re-run)'
+        return $false
+    }
+    Write-Info "move    ~\.claude, ~\.claude.json -> $ClaudeDir"
+    if ($DryRun) { return $true }
+    New-Item -ItemType Directory -Force (Split-Path $ClaudeDir) | Out-Null
+    if (Test-Path -LiteralPath $oldDir) {
+        Move-Item -LiteralPath $oldDir -Destination $ClaudeDir
+    } else {
+        New-Item -ItemType Directory $ClaudeDir | Out-Null
+    }
+    if (Test-Path -LiteralPath $oldJson) { Move-Item -LiteralPath $oldJson -Destination "$ClaudeDir\.claude.json" }
+    return $true
+}
+
+# A user environment variable, not just the PowerShell profile, so Claude Code
+# finds it however it is started.
+function Set-ClaudeConfigDir {
+    if ([Environment]::GetEnvironmentVariable('CLAUDE_CONFIG_DIR', 'User') -eq $ClaudeDir) {
+        Write-Info 'ok      CLAUDE_CONFIG_DIR'
+        return
+    }
+    Write-Info "env     CLAUDE_CONFIG_DIR = $ClaudeDir"
+    if ($DryRun) { return }
+    [Environment]::SetEnvironmentVariable('CLAUDE_CONFIG_DIR', $ClaudeDir, 'User')
+    $env:CLAUDE_CONFIG_DIR = $ClaudeDir
+}
+
+# Claude Code keeps one settings.json that mixes shared preferences with
+# machine-only keys (hooks, auto mode). The repo's keys are merged into it
 # instead of replacing the file, so this machine's own keys are kept.
-$ClaudeSettings = "$HOME\.claude\settings.json"
+$ClaudeSettings = "$ClaudeDir\settings.json"
 
 function Read-Json($path) {
     Get-Content -LiteralPath $path -Raw | ConvertFrom-Json -AsHashtable
 }
 
 function Merge-ClaudeSettings {
-    $shared = Read-Json "$Root\.claude\settings.json"
+    $shared = Read-Json "$Root\.config\claude\settings.json"
     $exists = Test-Path -LiteralPath $ClaudeSettings
     try { $live = if ($exists) { Read-Json $ClaudeSettings } else { [ordered]@{} } } catch { $live = $null }
     if ($live -isnot [System.Collections.IDictionary]) { # empty, broken or not an object: skip, like mac/linux
@@ -155,14 +200,14 @@ function Merge-ClaudeSettings {
         return
     }
     if ($exists) {
-        $backup = Join-Path $BackupDir '.claude\settings.json'
+        $backup = Join-Path $BackupDir '.config\claude\settings.json'
         Write-Info "backup  $ClaudeSettings -> $backup"
         if (-not $DryRun) {
             New-Item -ItemType Directory -Force (Split-Path $backup) | Out-Null
             Copy-Item -LiteralPath $ClaudeSettings -Destination $backup
         }
     }
-    Write-Info "merge   .claude\settings.json -> $ClaudeSettings"
+    Write-Info "merge   .config\claude\settings.json -> $ClaudeSettings"
     if ($DryRun) { return }
     New-Item -ItemType Directory -Force (Split-Path $ClaudeSettings) | Out-Null
     Set-Content -LiteralPath $ClaudeSettings -Value $after
@@ -174,18 +219,18 @@ function Export-ClaudeSettings {
         Write-Info "missing $ClaudeSettings"
         return
     }
-    $repoFile = "$Root\.claude\settings.json"
+    $repoFile = "$Root\.config\claude\settings.json"
     $shared = Read-Json $repoFile
     try { $live = Read-Json $ClaudeSettings } catch { $live = $null }
     if ($live -isnot [System.Collections.IDictionary]) {
-        Write-Warn "skip    .claude\settings.json ($ClaudeSettings isn't valid JSON)"
+        Write-Warn "skip    .config\claude\settings.json ($ClaudeSettings isn't valid JSON)"
         return
     }
     $new = [ordered]@{}
     foreach ($key in $shared.Keys) { if ($live.Contains($key)) { $new[$key] = $live[$key] } }
     $json = $new | ConvertTo-Json -Depth 32
     if ($json -eq ($shared | ConvertTo-Json -Depth 32)) { return }
-    Write-Info 'updated .claude\settings.json'
+    Write-Info 'updated .config\claude\settings.json'
     if (-not $DryRun) { Set-Content -LiteralPath $repoFile -Value $json }
 }
 
@@ -282,7 +327,10 @@ foreach ($entry in $Files.GetEnumerator()) {
     }
     Install-File $source $target
 }
-Merge-ClaudeSettings
+if (Move-ClaudeDir) {
+    Merge-ClaudeSettings
+    Set-ClaudeConfigDir
+}
 Install-Fonts
 Add-AllowedSigner
 if (Test-Path $BackupDir) { Write-Info "replaced files were backed up to $BackupDir" }

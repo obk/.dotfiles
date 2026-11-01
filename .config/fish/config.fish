@@ -3,6 +3,13 @@ fish_add_path $HOME/.bin $HOME/.local/bin
 set -gx EDITOR 'zed --wait'
 set -gx VISUAL $EDITOR
 
+# Claude Code keeps its settings, login and history here instead of ~/.claude
+# (the installers move ~/.claude over); only once the folder exists, so an
+# unmigrated machine keeps using ~/.claude
+if test -d $HOME/.config/claude
+    set -gx CLAUDE_CONFIG_DIR $HOME/.config/claude
+end
+
 if test -x /opt/homebrew/bin/brew
     /opt/homebrew/bin/brew shellenv | source
 else if test -x /usr/local/bin/brew

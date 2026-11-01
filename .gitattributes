@@ -7,7 +7,6 @@ macos/zshrc   text eol=lf
 macos/Brewfile text eol=lf
 linux/**      text eol=lf
 .config/**    text eol=lf
-.claude/**    text eol=lf
 .ssh/**       text eol=lf
 
 *.ps1         text eol=crlf

@@ -9,6 +9,13 @@ eval "$(oh-my-posh init zsh --config ~/.config/oh-my-posh/obk.toml)"
 export EDITOR='zed --wait'
 export VISUAL="$EDITOR"
 
+# Claude Code keeps its settings, login and history here instead of ~/.claude
+# (the installers move ~/.claude over); only once the folder exists, so an
+# unmigrated machine keeps using ~/.claude
+if [ -d "$HOME/.config/claude" ]; then
+    export CLAUDE_CONFIG_DIR="$HOME/.config/claude"
+fi
+
 alias cd..='cd ..'
 alias gp='git push'
 alias gl='git pull'
