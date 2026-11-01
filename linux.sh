@@ -254,7 +254,7 @@ fi
 
 # 1. Copy configs (~/.config/*, Claude Code settings) and fonts
 print_msg "Copying configs..."
-mkdir -p -m 700 "$HOME/.ssh"  # ssh refuses a ~/.ssh others can write to
+[ -d "$HOME/.ssh" ] || mkdir -m 700 "$HOME/.ssh"  # ssh refuses a ~/.ssh others can write to
 config_pairs | while IFS=$'\t' read -r rel dest; do install_file "$rel" "$dest"; done
 merge_claude_settings
 install_fonts
@@ -316,10 +316,12 @@ if ! command -v oh-my-posh &> /dev/null && [ ! -x "$HOME/.local/bin/oh-my-posh" 
     if [ -n "$POSH_ARCH" ]; then
         print_msg "Installing oh-my-posh to ~/.local/bin..."
         mkdir -p "$HOME/.local/bin"
-        curl -fsSL -o "$HOME/.local/bin/oh-my-posh" \
-            "https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/posh-linux-$POSH_ARCH" \
-            && chmod +x "$HOME/.local/bin/oh-my-posh" \
-            || print_info "oh-my-posh download failed, skipping"
+        if curl -fsSL -o "$HOME/.local/bin/oh-my-posh" \
+            "https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/posh-linux-$POSH_ARCH"; then
+            chmod +x "$HOME/.local/bin/oh-my-posh"
+        else
+            print_info "oh-my-posh download failed, skipping"
+        fi
     fi
 fi
 
@@ -361,7 +363,7 @@ fi
 if [[ "${XDG_CURRENT_DESKTOP:-}" == *GNOME* ]] && command -v gsettings &> /dev/null; then
     if get_confirmation "Apply GNOME settings (linux/gnome.sh)?"; then
         print_msg "Applying GNOME settings..."
-        REPO_DIR="$REPO_DIR" bash "$REPO_DIR/linux/gnome.sh"
+        env REPO_DIR="$REPO_DIR" bash "$REPO_DIR/linux/gnome.sh"
     else
         print_msg "Skipping GNOME settings..."
     fi

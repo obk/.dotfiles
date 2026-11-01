@@ -299,7 +299,8 @@ if (-not (Get-Command scoop -ErrorAction SilentlyContinue)) {
 
 if (Get-Command scoop -ErrorAction SilentlyContinue) {
     # git is needed before buckets can be added
-    if (-not $DryRun -and -not (scoop list git 6>$null)) { scoop install git }
+    $hasGit = scoop list git 6>$null
+    if (-not $DryRun -and -not $hasGit) { scoop install git }
 
     $haveBuckets = @(scoop bucket list | ForEach-Object Name)
     foreach ($bucket in Read-List "$Root\windows\packages\scoop-buckets.txt") {

@@ -226,7 +226,7 @@ fi
 
 # 1. Copy configs (~/.zshrc, ~/.config/*, Claude Code settings) and fonts
 print_msg "Copying configs..."
-mkdir -p -m 700 "$HOME/.ssh"  # ssh refuses a ~/.ssh others can write to
+[ -d "$HOME/.ssh" ] || mkdir -m 700 "$HOME/.ssh"  # ssh refuses a ~/.ssh others can write to
 remove_old_links
 config_pairs | while IFS=$'\t' read -r rel dest; do install_file "$rel" "$dest"; done
 merge_claude_settings
@@ -298,7 +298,7 @@ if [ -f "$REPO_DIR/macos/defaults.sh" ]; then
     if get_confirmation "Apply macOS defaults (macos/defaults.sh)?"; then
         print_msg "Applying macOS defaults..."
         # Run with its own bash shebang (not sourced) so its sudo keep-alive tracks the right PID
-        REPO_DIR="$REPO_DIR" bash "$REPO_DIR/macos/defaults.sh"
+        env REPO_DIR="$REPO_DIR" bash "$REPO_DIR/macos/defaults.sh"
     else
         print_msg "Skipping macOS defaults..."
     fi
