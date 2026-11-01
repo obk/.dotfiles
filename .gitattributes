@@ -12,6 +12,10 @@ linux/**      text eol=lf
 
 *.ps1         text eol=crlf
 
+# Windows Terminal rewrites its settings with LF; keep the repo copy the same
+# so the installer doesn't see a difference (and back it up) on every run
+windows/windows-terminal/** text eol=lf
+
 *.jpg  binary
 *.jpeg binary
 *.png  binary

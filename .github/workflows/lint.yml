@@ -1,0 +1,29 @@
+name: lint
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: shellcheck
+        run: shellcheck mac.sh linux.sh linux/*.sh macos/*.sh
+
+  psscriptanalyzer:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          Install-Module PSScriptAnalyzer -Force -Scope CurrentUser
+          # Write-Host is the installer's output; Invoke-Expression is how
+          # scoop and oh-my-posh are meant to be loaded
+          $results = Get-ChildItem -Recurse -Include *.ps1 |
+            Invoke-ScriptAnalyzer -Severity Error, Warning `
+              -ExcludeRule PSAvoidUsingWriteHost, PSAvoidUsingInvokeExpression
+          $results | Format-Table -AutoSize | Out-String -Width 200
+          if ($results) { exit 1 }

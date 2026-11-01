@@ -61,7 +61,7 @@ configs are **copied**, not symlinked, so the repo can be moved or deleted witho
 │   ├── powershell/
 │   └── windows-terminal/
 ├── fonts/                # FiraCode and Lilex nerd fonts (+ licenses), installed by every installer
-└── wallpapers/
+└── wallpapers/           # 5.png, set by macos/defaults.sh and linux/gnome.sh
 ```
 
 zed is the default editor everywhere (`EDITOR='zed --wait'` in fish, zsh and the powershell profile). its extensions are listed in `auto_install_extensions` in `.config/zed/settings.json`; zed installs any that are missing on launch.
@@ -268,4 +268,4 @@ fish is the primary shell. `macos/zshrc` is kept as a zsh fallback with the same
 | `cd..` | `cd ..` | go up one directory. |
 | `claer` / `clera` / `celar`, `sl`, `gti`, `grpe`, `exti` | `clear`, `ls`, `git`, `grep`, `exit` | common typos still work. |
 
-`bf` is macos-only and `mu` runs dnf on linux. on windows the powershell profile defines `scf` (scoop update + cleanup).
+`bf` is macos-only and `mu` runs dnf on linux. the windows powershell profile has the same git shortcuts, `ll`/`lal`, `du` and typo fixes (except `sl` and `grpe`: `sl` is powershell's `Set-Location`, and windows has no `grep`), plus `scf` (scoop update + cleanup). `gp`, `gl` and `gcm` replace powershell's built-in aliases for `Get-ItemProperty`, `Get-Location` and `Get-Command`; use the full cmdlet names for those.

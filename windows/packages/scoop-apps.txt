@@ -2,6 +2,7 @@ gh
 go
 eza
 git
+btop
 vlc
 7zip
 dust
