@@ -5,8 +5,11 @@
 
 [core]
     compression = 9
-    whitespace = error
     preloadindex = true
+
+[apply]
+    # refuse patches that add trailing whitespace or mixed indentation
+    whitespace = error
 
 [init]
     defaultBranch = main
@@ -16,12 +19,6 @@
 
 [url "git@github.com:obk/"]
     insteadOf = "obk:"
-
-[safe]
-    # Standard cross-platform path
-    directory = ~/dev/git.obk.dev
-    # Retained WSL-specific path if you access Windows drives from a Linux shell
-    directory = /mnt/c/Users/obk/dev/git.obk.dev
 
 [gpg]
     format = ssh
@@ -33,7 +30,6 @@
     gpgSign = true
 
 [gpg "ssh"]
+    # lists which key belongs to which email, so git can verify signatures;
+    # the installers add signingKey above to it
     allowedSignersFile = ~/.ssh/allowed_signers
-
-[includeIf "gitdir/i:~/dev/spinney/"]
-    path = ~/dev/spinney/.gitconfig

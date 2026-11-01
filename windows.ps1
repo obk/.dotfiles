@@ -212,6 +212,33 @@ function Install-Fonts {
     if (-not $changed) { Write-Info "ok      $dir" }
 }
 
+# Commits are signed with user.signingKey (.config\git\config). git verifies
+# signatures against gpg.ssh.allowedSignersFile, so list that key there.
+# Other entries in the file are kept.
+function Add-AllowedSigner {
+    if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
+        Write-Warn 'skip    allowed_signers (git not installed yet)'
+        return
+    }
+    $config = "$Root\.config\git\config"
+    $key = git config -f $config --path user.signingKey
+    $file = git config -f $config --path gpg.ssh.allowedSignersFile
+    $email = git config -f $config user.email
+    if (-not (Test-Path -LiteralPath $key)) {
+        Write-Info "skip    $file (no $key on this machine yet)"
+        return
+    }
+    $line = "$email " + ((Get-Content -LiteralPath $key -TotalCount 1).Split(' ')[0..1] -join ' ')
+    if ((Test-Path -LiteralPath $file) -and ((Get-Content -LiteralPath $file) -contains $line)) {
+        Write-Info "ok      $file"
+        return
+    }
+    Write-Info "signer  $email -> $file"
+    if ($DryRun) { return }
+    # LF only: ssh-keygen reads this file and a trailing CR would break the key
+    [IO.File]::AppendAllText($file, "$line`n")
+}
+
 # --- export ------------------------------------------------------------------
 
 if ($Export) {
@@ -257,6 +284,7 @@ foreach ($entry in $Files.GetEnumerator()) {
 }
 Merge-ClaudeSettings
 Install-Fonts
+Add-AllowedSigner
 if (Test-Path $BackupDir) { Write-Info "replaced files were backed up to $BackupDir" }
 
 if ($SkipPackages) { return }

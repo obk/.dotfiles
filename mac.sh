@@ -167,6 +167,27 @@ install_fonts() {
     print_info "fonts   fonts/ -> $dest"
 }
 
+# Commits are signed with user.signingKey (.config/git/config). git verifies
+# signatures against gpg.ssh.allowedSignersFile, so list that key there.
+# Other entries in the file are kept.
+add_allowed_signer() {
+    local config="$REPO_DIR/.config/git/config" key file email line
+    key=$(git config -f "$config" --path user.signingKey)
+    file=$(git config -f "$config" --path gpg.ssh.allowedSignersFile)
+    email=$(git config -f "$config" user.email)
+    if [ ! -f "$key" ]; then
+        print_info "skip    $file (no $key on this machine yet)"
+        return
+    fi
+    line="$email $(cut -d' ' -f1,2 "$key")"
+    if [ -f "$file" ] && grep -qxF "$line" "$file"; then
+        print_info "ok      $file"
+        return
+    fi
+    printf '%s\n' "$line" >> "$file"
+    print_info "signer  $email -> $file"
+}
+
 # Copy the current values of the repo's keys from the live settings back into the repo.
 export_claude_settings() {
     if [ ! -f "$CLAUDE_SETTINGS" ]; then
@@ -210,6 +231,7 @@ remove_old_links
 config_pairs | while IFS=$'\t' read -r rel dest; do install_file "$rel" "$dest"; done
 merge_claude_settings
 install_fonts
+add_allowed_signer
 [ -d "$BACKUP_DIR" ] && print_info "replaced files were backed up to $BACKUP_DIR"
 
 # 2. Install Homebrew

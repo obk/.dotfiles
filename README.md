@@ -37,13 +37,15 @@ configs are **copied**, not symlinked, so the repo can be moved or deleted witho
 ├── .config/              # mirrors ~/.config
 │   ├── btop/             # btop.conf, TTY theme: uses the terminal's colors
 │   ├── fish/
+│   ├── fontconfig/       # lilex nerd font mono as the default monospace (linux)
 │   ├── gh/               # config.yml only (ssh); hosts.yml holds the login token and is git-ignored
 │   ├── ghostty/          # config, tabs.css (macos + linux)
-│   ├── git/              # shared by all three
+│   ├── git/              # shared by all three; ssh-signed commits and tags
+│   ├── herdr/            # shared by all three
 │   ├── oh-my-posh/       # shared by all three
 │   └── zed/              # shared by all three (windows: %APPDATA%\Zed)
 ├── .ssh/
-│   └── config            # ssh hosts (git server over tailscale); no keys
+│   └── config            # ssh host aliases (home server on the lan); no keys
 ├── .claude/
 │   └── settings.json     # shared claude code preferences, merged into ~/.claude/settings.json
 ├── macos/
@@ -74,11 +76,17 @@ ghostty, windows terminal and zed use **[catppuccin](https://catppuccin.com)**: 
 
 claude code uses its own `auto` theme (follows the terminal's light/dark background) rather than the terminal palette.
 
+### commit signing (`.config/git/config`)
+
+commits and tags are signed with an ssh key, `~/.ssh/obk.pub` (`user.signingKey`). the key itself isn't in the repo; copy it (and its private half) to `~/.ssh/` on a new machine and add it to github as a **signing key**.
+
+git checks signatures (`git log --show-signature`) against `~/.ssh/allowed_signers`. every installer adds `<email> <key>` for the signing key to that file, keeping any other entries; if the key isn't there yet the step is skipped, so re-run the installer once it is.
+
 ### claude code (`.claude/settings.json`)
 
 claude code keeps everything in one `~/.claude/settings.json`, mixing preferences with keys that only make sense on one machine. so this file is **merged**, not copied: install writes the repo's keys into the live file and keeps every other key (a changed file is backed up first, like the rest). export copies the current values of those same keys back, so a setting changed on one machine (say, the model) ends up in the repo.
 
-- **shared:** `model`, `env` (subagent model), `theme` (`auto`: follows the terminal's light/dark background), `modelSettings` and the notification settings.
+- **shared:** `env` (subagent model), `theme` (`auto`: follows the terminal's light/dark background), `modelSettings` and the notification settings.
 - **not shared:** plugins (`enabledPlugins`, `extraKnownMarketplaces`, `pluginConfigs`), `hooks` (local script paths), `autoMode` and ui state, plus everything else in `~/.claude` (login, history, sessions, caches, installed plugin files). to share another key, add it to `.claude/settings.json` once; export keeps it up to date from then on.
 - needs `python3` on macos and linux (macos gets it with the xcode command line tools); without it the step is skipped.
 
@@ -115,6 +123,7 @@ the script can be run from any directory and is safe to re-run.
 
   * **copy configs:** `macos/zshrc` → `~/.zshrc` and every file in `.config` → `~/.config`; `.claude/settings.json` is merged into `~/.claude/settings.json`.
   * **backups:** anything different that already exists is moved to `~/.dotfiles-backup/<timestamp>/` first. symlinks left by older versions of this repo are replaced with real files.
+  * **commit signing:** adds the signing key to `~/.ssh/allowed_signers` (see [commit signing](#commit-signing-configgitconfig)).
   * **install homebrew:** installs it if missing (supporting both arm and intel macs).
   * **bundle packages:** prompts to install `macos/Brewfile` via `brew bundle`.
   * **claude code:** prompts to install it with its official installer (`curl https://claude.ai/install.sh`, into `~/.local/bin`) if it isn't installed yet.
@@ -138,6 +147,7 @@ same flags as `mac.sh` (`-y`, `-e`, `-h`).
 
   * **copy configs:** every file in `.config` → `~/.config`; `.claude/settings.json` is merged into `~/.claude/settings.json`. no zshrc; bash stays as the fallback shell.
   * **backups:** same as macos, to `~/.dotfiles-backup/<timestamp>/`.
+  * **commit signing:** same as macos, adds the signing key to `~/.ssh/allowed_signers`.
   * **system setup:** prompts to run `linux/fedora-setup.sh` (see below).
   * **repos:** prompts, then adds the repos the package list needs (skipping any already there): [rpm fusion](https://rpmfusion.org) (steam, unrar), [terra](https://terra.fyralabs.com) (ghostty, zed, signal, discord, spotify, heroic), copr `imput/helium` (helium browser) and tailscale's repo. to add a repo, edit `add_fedora_repos` in `linux.sh`.
   * **dnf packages:** installs whatever in `linux/packages.txt` isn't installed yet (a name no repo has is skipped and listed at the end instead of failing the whole install), then enables `tailscaled`. no flatpaks.
@@ -174,6 +184,7 @@ cd $HOME\.dotfiles
 | `.config/herdr/config.toml`, `config-gpui.local.toml` | `~\.config\herdr\` |
 | `.ssh/config` | `~\.ssh\` |
 | `.claude/settings.json` | merged into `~\.claude\settings.json` |
+| signing key from `.config/git/config` | added to `~\.ssh\allowed_signers` |
 | `windows/powershell/…profile.ps1` | `$PROFILE` |
 | `windows/windows-terminal/settings.json` | `%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_…\LocalState\` |
 
